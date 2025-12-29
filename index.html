@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Median Bilangan Acak</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="min-h-screen p-6 md:p-12">
+
+    <div class="w-full px-6">
+        <!-- ini buat judul sama deskripsi atasnya -->
+        <header class="text-center mb-12">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-800 tracking-tight">
+                Median Bilangan Acak
+            </h1>
+            <p class="text-slate-500 mt-2">Hitung median dari sekumpulan bilangan acak data</p>
+        </header>
+
+        <!-- ini buat posisi 3 tabel di atas  -->
+        <main class="flex flex-col gap-10 w-full">
+            <div class="grid grid-cols-[420px_420px_1fr] gap-8 w-full">
+            
+            <!-- ini buat kotak kiri inputnya -->
+                <section class="card p-8 border border-slate-100 shrink-0">
+                    <label for="numberInput" class="block text-sm font-semibold text-slate-600 mb-3 uppercase tracking-wider">
+                        Input Data
+                    </label>
+                    <textarea 
+                        id="numberInput" 
+                        placeholder="Masukkan angka (contoh: 12 5 8)"
+                        class="w-full h-48 p-4 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none font-mono text-slate-700"
+                    ></textarea>
+                    <button 
+                        onclick="processMedian('iteratif')"
+                        class="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all active:scale-95 shadow-lg shadow-blue-200"
+                    >
+                        Iteratif
+                    </button>
+                    <button 
+                        onclick="processMedian('rekursif')"
+                        class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 px-6 rounded-xl transition-all active:scale-95 shadow-lg shadow-green-200"
+                    >
+                        Rekursif
+                    </button>
+                </section>
+
+                <!-- ini buat kotak kanan nampilin output -->
+                <section class="card p-8 border border-slate-100 shrink-0 flex flex-col">
+                    <h2 class="text-sm font-semibold text-slate-600 mb-6 uppercase tracking-wider self-start">
+                        Nilai Median 
+
+                    </h2>
+                    
+                    <!-- ini buat nampilin hasil iteratif -->
+                    <div class="w-full mb-8 text-left border-l-4 border-blue-500 pl-4">
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase mb-2">
+                            Iteratif
+                        </h3>
+                        <p id="iteratifOutput" class="text-6xl font-extrabold text-blue-600">
+                            -
+                        </p>
+                        <p class="text-xs text-slate-400">
+                            Waktu eksekusi: <span id="iteratifTime">- ms</span>
+                        </p>
+                    </div>
+
+
+                    <!-- ini buat nampilin hasil rekursif -->
+                    <div class="w-full text-left border-l-4 border-green-500 pl-4">
+                        <h3 class="text-xs font-semibold text-slate-500 uppercase mb-2">
+                            Rekursif
+                        </h3>
+                        <p id="rekursifOutput" class="text-6xl font-extrabold text-green-600">
+                            -
+                        </p>
+                        <p class="text-xs text-slate-400">
+                            Waktu eksekusi: <span id="rekursifTime">- ms</span>
+                        </p>
+                    </div>
+                </section>
+            
+                <!-- ini buat kotak tabel bar -->
+                <section class="card p-6 border border-slate-100 flex flex-col">
+                    <h3 class="text-sm font-semibold text-slate-600 mb-4 uppercase tracking-wider">
+                        Perbandingan Waktu Eksekusi
+                    </h3>
+
+                    <div class="flex-1">
+                        <canvas id="barChart"></canvas>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+<!-- ini buat kotak tabel garis -->
+<div class="card mt-10 p-6 border border-slate-100">
+  <h3 class="text-sm font-semibold text-slate-600 mb-4 uppercase tracking-wider">
+    Grafik Kompleksitas
+  </h3>
+  <canvas id="complexityChart" height="150"></canvas>
+</div>
+
+<!-- ini buat dihubungin sama javascript -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
