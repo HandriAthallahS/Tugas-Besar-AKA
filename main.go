@@ -8,14 +8,26 @@ import (
 
 // ini struct/inisiasi buat nerima data dari inputan
 type RequestData struct {
-	Data   []int  `json:"data"`
+	Pesan  string `json:"pesan"`
 	Metode string `json:"metode"`
 }
 
 // ini struct/inisiasi buat kirim hasil outputnya
 type ResponseData struct {
-	Median        float64 `json:"median"`
+	Hasil         string  `json:"hasil"`
 	ExecutionTime float64 `json:"executionTime"`
+}
+
+var perubahan = map[rune]rune{
+	'a': 'm', 'b': 'q', 'c': 'z', 'd': 'r', 'e': 't',
+	'f': 'x', 'g': 'k', 'h': 'l', 'i': 's', 'j': 'w',
+	'k': 'p', 'l': 'u', 'm': 'n', 'n': 'o', 'o': 'v',
+	'p': 'y', 'q': 'a', 'r': 'b', 's': 'c', 't': 'd',
+	'u': 'e', 'v': 'f', 'w': 'g', 'x': 'h', 'y': 'i',
+	'z': 'j',
+
+	'0': '5', '1': '8', '2': '4', '3': '9', '4': '0',
+	'5': '6', '6': '1', '7': '2', '8': '7', '9': '3',
 }
 
 func main() {
@@ -36,30 +48,26 @@ func main() {
 		}
 
 		var req RequestData
-		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req.Data) == 0 {
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Pesan == "" {
 			http.Error(w, "Invalid data", http.StatusBadRequest)
 			return
 		}
 
-		// ini buat catat waktu mulai buat hitung waktu eksekusinya
 		start := time.Now()
-		var median float64
+		var hasil string
 
-		// ini diulang 100 rb kali biar perbedaan waktu iteratif sama rekursif keliatan
 		for i := 0; i < 100000; i++ {
 			if req.Metode == "rekursif" {
-				median = medianRecursive(req.Data)
+				hasil = enkripsirekursif(req.Pesan)
 			} else {
-				median = medianIterative(req.Data)
+				hasil = enkripsiiteratif(req.Pesan)
 			}
 		}
 
-		// durasi ekseksinya dari nanodetik diubah ke milidetik
 		duration := float64(time.Since(start).Nanoseconds()) / 1000000.0
 
-		// ini buat kirim hasil median sama waktu eksekusi
 		json.NewEncoder(w).Encode(ResponseData{
-			Median:        median,
+			Hasil:         hasil,
 			ExecutionTime: duration,
 		})
 	})
@@ -68,91 +76,49 @@ func main() {
 	http.ListenAndServe(":8080", nil)
 }
 
-// medianIterative itu disorting dulu pake insertion sort, kalau udah terurut semua baru cari mediannya
-func medianIterative(A []int) float64 {
-	var pass, i, n int
-	var temp int
+func enkripsiiteratif(teks string) string {
+	var huruf []rune = []rune(teks)
+	var hasil []rune = make([]rune, len(huruf))
+	var i int
 
-	// di sini data asli di salin semua ke slice baru biar slice asli ga keubah, jadi lebih gampang analisisnya
-	var B []int = make([]int, len(A))
-	copy(B, A)
+	for i = 0; i < len(huruf); i++ {
+		var karakter rune = huruf[i]
 
-	if len(B) == 0 {
-		return 0
-	}
-
-	n = len(B)
-
-	pass = 1
-	for pass <= n-1 {
-		i = pass
-		temp = B[pass]
-
-		for i > 0 && temp < B[i-1] {
-			B[i] = B[i-1]
-			i = i - 1
+		if karakter >= 'A' && karakter <= 'Z' {
+			karakter = karakter + 32
 		}
 
-		B[i] = temp
-		pass++
-	}
+		var hasilEnkripsi rune
+		var ketemu bool
+		hasilEnkripsi, ketemu = perubahan[karakter]
 
-	if n%2 == 0 {
-		return float64(B[(n/2)-1]+B[n/2]) / 2
-	} else {
-		return float64(B[n/2])
-	}
-
-}
-
-// medianRecursive itu disorting dulu pake merge sort, kalau udah terurut semua baru cari mediannya
-func medianRecursive(A []int) float64 {
-	var B []int = make([]int, len(A))
-	copy(B, A)
-
-	if len(B) == 0 {
-		return 0
-	}
-
-	B = mergeSort(B)
-
-	n := len(B)
-	if n%2 == 0 {
-		return float64(B[n/2-1]+B[n/2]) / 2
-	}
-	return float64(B[n/2])
-}
-
-// merge sort itu(bagi slice jadi 2, urutin kiri sama kanan, gabungin lagi secara terurut)
-func mergeSort(arr []int) []int {
-	var i, j, k int = 0, 0, 0
-	if len(arr) <= 1 {
-		return arr
-	} else {
-		//di sini slicenya dibagi jadi 2 dulu
-		var mid int = len(arr) / 2
-		var left []int = mergeSort(arr[:mid])
-		var right []int = mergeSort(arr[mid:])
-
-		//ini inisiasi variabel buat nanti nampung hasil urutan gabungan
-		var result []int = make([]int, len(left)+len(right))
-
-		//slice yang udah dibagi 2 tadi nanti digabungin di sini secara terurut
-		for i = 0; i < len(result); i++ {
-			if k >= len(left) {
-				result[i] = right[j]
-				j++
-			} else if j >= len(right) {
-				result[i] = left[k]
-				k++
-			} else if left[k] <= right[j] {
-				result[i] = left[k]
-				k++
-			} else {
-				result[i] = right[j]
-				j++
-			}
+		if ketemu {
+			hasil[i] = hasilEnkripsi
+		} else {
+			hasil[i] = huruf[i]
 		}
-		return result
 	}
+	return string(hasil)
+}
+
+func enkripsirekursif(teks string) string {
+	if len(teks) == 0 {
+		return ""
+	}
+
+	var karakter rune = rune(teks[0])
+
+	if karakter >= 'A' && karakter <= 'Z' {
+		karakter = karakter + 32
+	}
+
+	var hasilEnkripsi rune
+	var ketemu bool
+	hasilEnkripsi, ketemu = perubahan[karakter]
+
+	if !ketemu {
+		hasilEnkripsi = karakter
+	}
+
+	return string(hasilEnkripsi) + enkripsirekursif(teks[1:])
 }

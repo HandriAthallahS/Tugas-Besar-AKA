@@ -45,7 +45,7 @@ const lineChart = new Chart(ctxComplexity, {
         beginAtZero: true,
         title: {
           display: true,
-          text: 'Banyak Bilangan (n)'
+          text: 'Panjang Teks (n)'
         }
       },
       y: {
@@ -60,7 +60,7 @@ const lineChart = new Chart(ctxComplexity, {
   }
 });
 
-function processMedian(metode) {
+function prosesEnkripsi(metode) {
     if (metode === 'iteratif') {
         runIterative();
     } else {
@@ -73,13 +73,11 @@ let rekursifTime = 0;
 
 async function runIterative() {
 
-    const input = document.getElementById('numberInput').value;
+    const text = document.getElementById('textInput').value;
     const outputElement = document.getElementById('iteratifOutput');
     const timeElement = document.getElementById('iteratifTime');
 
-    const numbers = input.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
-    console.log(numbers);
-    if (numbers.length === 0) {
+    if (text.trim() === "") { 
         outputElement.textContent = "Input tidak valid";
         return;
     }
@@ -90,33 +88,33 @@ async function runIterative() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 metode: 'iteratif',
-                data: numbers
+                pesan: text
             })
         });
 
         const data = await response.json();
 
-        outputElement.textContent = data.median;
+        outputElement.textContent = data.hasil;
         timeElement.textContent = data.executionTime.toFixed(2) + " ms";
         iteratifTime = parseFloat(data.executionTime);
 
         updateChart()
-        updateLineChart(numbers.length, iteratifTime, 'iteratif');
+         updateLineChart(text.length, iteratifTime, 'iteratif');
     } catch {
         outputElement.textContent = "Error Server";
     }
 }
 
 async function runRecursive() {
-    const input = document.getElementById('numberInput').value;
+    const text = document.getElementById('textInput').value;
     const outputElement = document.getElementById('rekursifOutput');
     const timeElement = document.getElementById('rekursifTime');
 
-    const numbers = input.split(/[\s,]+/).map(Number).filter(n => !isNaN(n));
-    if (numbers.length === 0) {
+    if (text.trim() === "") { 
         outputElement.textContent = "Input tidak valid";
         return;
     }
+
 
 
     try {
@@ -125,18 +123,18 @@ async function runRecursive() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 metode: 'rekursif',
-                data: numbers
+                pesan: text
             })
         });
 
         const data = await response.json();
   
-        outputElement.textContent = data.median;
+        outputElement.textContent = data.hasil;
         timeElement.textContent = data.executionTime.toFixed(2) + " ms";
         rekursifTime = parseFloat(data.executionTime);
 
         updateChart()
-        updateLineChart(numbers.length, rekursifTime, 'rekursif');
+        updateLineChart(text.length, rekursifTime, 'rekursif');
     } catch {
         outputElement.textContent = "Error Server";
     }
